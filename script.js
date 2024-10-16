@@ -10,47 +10,61 @@
 // ==/UserScript==
 
 function randomIntFromInterval(min, max) {
-	return Math.floor(Math.random() * (max - min + 1) + min)
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 function jobsGetter() {
-	'use strict';
-	// let target = document.querySelector('.MuiTableBody-root');
-	let targets = [document.querySelector('title'), document.querySelector('.MuiTableBody-root')];
+  "use strict";
+  // let target = document.querySelector('.MuiTableBody-root');
+  let targets = [
+    document.querySelector("title"),
+    document.querySelector(".MuiTableBody-root"),
+  ];
 
-	const reloadAfter = randomIntFromInterval(2500, 4000);
+  const randomInterval = randomIntFromInterval(2500, 10000);
 
-	targets.forEach((target) => {
-			const observer = new MutationObserver(mutations => {
-					let xpathClaim = "//button[text()='Claim']";
-					let buttonClaim = document.evaluate(xpathClaim, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-					let xpathSelectAll = "/html/body/div[1]/div/div[2]/div/div[3]/table/thead/tr/th[1]/span/input";
-					let buttonSelectAll = document.evaluate(xpathSelectAll, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-					if (!buttonSelectAll) {
-							buttonSelectAll = document.querySelector("#jobs-auction-select-all");
-					}
+  targets.forEach((target) => {
+    const observer = new MutationObserver((mutations) => {
+      let xpathClaim = "//button[text()='Claim']";
+      let buttonClaim = document.evaluate(
+        xpathClaim,
+        document,
+        null,
+        XPathResult.FIRST_ORDERED_NODE_TYPE,
+        null
+      ).singleNodeValue;
+      let xpathSelectAll =
+        "/html/body/div[1]/div/div[2]/div/div[3]/table/thead/tr/th[1]/span/input";
+      let buttonSelectAll = document.evaluate(
+        xpathSelectAll,
+        document,
+        null,
+        XPathResult.FIRST_ORDERED_NODE_TYPE,
+        null
+      ).singleNodeValue;
+      if (!buttonSelectAll) {
+        buttonSelectAll = document.querySelector("#jobs-auction-select-all");
+      }
 
-					if (targets[0].textContent !== 'Fluently' || targets[1].textContent !== 'No jobs available.') {
-							buttonSelectAll.click();
-							buttonClaim.click();
-							/*
-							setTimeout(function(){
-									window.location.reload(1);
-							}, reloadAfter);
-							*/
-					}
-			});
+      if (
+        targets[0].textContent !== "Fluently" ||
+        targets[1].textContent !== "No jobs available."
+      ) {
+        setTimeout(function () {
+          buttonSelectAll.click();
+          buttonClaim.click();
+          // window.location.reload(1);
+        }, randomInterval);
+      }
+    });
 
+    observer.observe(target, {
+      attributes: true,
+      childList: true,
+    });
+  });
 
-			observer.observe(target, {
-					attributes: true,
-					childList: true
-			});
-
-	});
-
-	console.log("Started observer.");
-
-};
+  console.log("Started observer.");
+}
 
 setTimeout(() => jobsGetter(), 5000);
